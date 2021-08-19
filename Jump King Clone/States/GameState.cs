@@ -25,6 +25,7 @@ namespace Jump_King_Clone.States
         private List<Sprite> _sprites;
         private List<Player> _players;
         private SpriteFont _font;
+        private Texture2D _testCircle, _circleIndicator;
 
         #endregion
 
@@ -38,6 +39,10 @@ namespace Jump_King_Clone.States
             _font = _content.Load<SpriteFont>("misc/font");
 
             _guiManager = new GuiManager(_content, _defaultTex);
+
+            _testCircle = _content.Load<Texture2D>("misc/circle");
+
+            _circleIndicator = _content.Load<Texture2D>("misc/circleIndicator");
 
             _sprites = new List<Sprite>()
             {
@@ -202,6 +207,12 @@ namespace Jump_King_Clone.States
             spriteBatch.DrawString(_font, "Velocity: " + _players[0].Velocity.ToString(), new Vector2(20, 40), Color.White);
 
             spriteBatch.DrawString(_font, "Jump Charge: " + _players[0].jumpCharge.ToString(), new Vector2(20, 60), Color.White);
+
+            spriteBatch.DrawString(_font, "Jump Angle: " + (MathHelper.ToDegrees(_players[0].Angle) + 90).ToString(), new Vector2(55, 80), Color.White);
+
+            spriteBatch.Draw(_testCircle, new Vector2(20, 80), Color.White);
+
+            spriteBatch.Draw(_circleIndicator, new Vector2(36, 96), new Rectangle(0, 0, 32, 32), Color.Red, _players[0].Angle + MathHelper.ToRadians(90f), new Vector2(16, 16), 1, SpriteEffects.None, 1);
 
             // GUI
 

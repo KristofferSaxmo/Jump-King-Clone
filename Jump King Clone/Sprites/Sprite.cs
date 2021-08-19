@@ -39,6 +39,7 @@ namespace Jump_King_Clone.Sprites
         }
         public Vector2 Velocity { get; set; }
         public float Speed { get; set; }
+        public float Angle { get; set; }
         public Color Color { get; set; }
         public bool IsRemoved { get; protected set; }
         public int Scale

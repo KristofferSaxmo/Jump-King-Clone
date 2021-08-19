@@ -14,7 +14,7 @@ namespace Jump_King_Clone.Sprites
 
         private Vector2 _direction;
 
-        public double jumpCharge;
+        public double jumpCharge = 0.2f;
 
         private bool _inAir, _hitInAir, _fallen;
 
@@ -37,7 +37,7 @@ namespace Jump_King_Clone.Sprites
 
             Velocity = new Vector2(0, Velocity.Y);
 
-            if (_currentKey.IsKeyDown(Input.Jump) || jumpCharge > 0)
+            if (_currentKey.IsKeyDown(Input.Jump) || jumpCharge > 0.2f)
             {
                 Jump();
                 return;
@@ -51,9 +51,17 @@ namespace Jump_King_Clone.Sprites
             /*
              * Charge Jump
              */
-            if (_currentKey.IsKeyDown(Input.Jump) && jumpCharge < 0.7)
+            if (_currentKey.IsKeyDown(Input.Jump) && jumpCharge < 0.8)
             {
                 jumpCharge += 0.02;
+                if (_currentKey.IsKeyDown(Input.Left))
+                {
+                    Angle = MathHelper.ToRadians(180f + (float)jumpCharge * 95);
+                }
+                else if (_currentKey.IsKeyDown(Input.Right))
+                {
+                    Angle = MathHelper.ToRadians(0f - (float)jumpCharge * 95);
+                }
                 return;
             }
 
@@ -66,13 +74,15 @@ namespace Jump_King_Clone.Sprites
                 {
                     Velocity = new Vector2(0, (float)jumpCharge * -50);
                     _inAir = true;
-                    jumpCharge = 0;
+                    jumpCharge = 0.2f;
                     return;
                 }
-                Velocity = new Vector2((float)jumpCharge * -10, (float)jumpCharge * -50);
+                _direction = GetJumpDirection(Angle);
+                _direction *= (float)jumpCharge * 42;
+                Velocity = _direction;
                 _isFacingLeft = true;
                 _inAir = true;
-                jumpCharge = 0;
+                jumpCharge = 0.2f;
                 return;
             }
 
@@ -81,10 +91,12 @@ namespace Jump_King_Clone.Sprites
              */
             if (_currentKey.IsKeyDown(Input.Right))
             {
-                Velocity = new Vector2((float)jumpCharge * 10, (float)jumpCharge * -50);
+                _direction = GetJumpDirection(Angle);
+                _direction *= (float)jumpCharge * 42;
+                Velocity = _direction;
                 _isFacingLeft = false;
                 _inAir = true;
-                jumpCharge = 0;
+                jumpCharge = 0.2f;
                 return;
             }
 
@@ -93,7 +105,7 @@ namespace Jump_King_Clone.Sprites
              */
             Velocity = new Vector2(0, (float)jumpCharge * -50);
             _inAir = true;
-            jumpCharge = 0;
+            jumpCharge = 0.2f;
             return;
         }
 
@@ -135,7 +147,7 @@ namespace Jump_King_Clone.Sprites
                 return;
             }
 
-            if (jumpCharge > 0)
+            if (jumpCharge > 0.2f)
             {
                 _animationManager.Play(_animations["Charge"]);
                 return;
@@ -199,10 +211,14 @@ namespace Jump_King_Clone.Sprites
 
             if ((IsTouchingLeft(sprite) || IsTouchingRight(sprite)) && _inAir)
             {
-                Velocity = new Vector2(-_contactVelocity.X * 0.4f, Velocity.Y);
+                Velocity = new Vector2(-_contactVelocity.X * 0.6f, Velocity.Y);
                 _hitInAir = true;
                 return;
             }
+        }
+        public Vector2 GetJumpDirection(float angle)
+        {
+            return new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
         }
     }
 }
