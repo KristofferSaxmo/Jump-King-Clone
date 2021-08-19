@@ -58,26 +58,22 @@ namespace Jump_King_Clone.Sprites
             }
 
             /*
-             * Jump straight up
-             */
-            if (!_currentKey.IsKeyDown(Input.Left) && !_currentKey.IsKeyDown(Input.Right))
-            {
-                Velocity = new Vector2(0, (float)jumpCharge * -50);
-                _inAir = true;
-                jumpCharge = 0;
-                return;
-            }
-
-            /*
              * Jump left
              */
             if (_currentKey.IsKeyDown(Input.Left))
             {
-                if (_currentKey.IsKeyDown(Input.Right)) return;
+                if (_currentKey.IsKeyDown(Input.Right))
+                {
+                    Velocity = new Vector2(0, (float)jumpCharge * -50);
+                    _inAir = true;
+                    jumpCharge = 0;
+                    return;
+                }
                 Velocity = new Vector2((float)jumpCharge * -10, (float)jumpCharge * -50);
                 _isFacingLeft = true;
                 _inAir = true;
                 jumpCharge = 0;
+                return;
             }
 
             /*
@@ -89,7 +85,16 @@ namespace Jump_King_Clone.Sprites
                 _isFacingLeft = false;
                 _inAir = true;
                 jumpCharge = 0;
+                return;
             }
+
+            /*
+             * Jump straight up
+             */
+            Velocity = new Vector2(0, (float)jumpCharge * -50);
+            _inAir = true;
+            jumpCharge = 0;
+            return;
         }
 
         private void Walk()
