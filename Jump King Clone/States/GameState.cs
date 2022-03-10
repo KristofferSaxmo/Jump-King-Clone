@@ -4,10 +4,11 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Jump_King_Clone.Interfaces;
 using Jump_King_Clone.Managers;
+using Jump_King_Clone.Input;
 using Jump_King_Clone.Models;
 using Jump_King_Clone.Sprites;
 using System.Collections.Generic;
-using System.IO;
+using Jump_King_Clone.Sprites.Player;
 using System.Linq;
 
 namespace Jump_King_Clone.States
@@ -19,34 +20,25 @@ namespace Jump_King_Clone.States
 
         #region Fields
 
-        private KeyboardState _previousKeyboardState;
         private bool _showHitboxes = false;
         private GuiManager _guiManager;
         private List<Sprite> _sprites;
-        private List<Player> _players;
-        private SpriteFont _font;
-        private Texture2D _testCircle, _circleIndicator;
+        private List<PlayerStateManager> _players;
 
         #endregion
 
-        public GameState(Game1 game, ContentManager content, Texture2D defaultTex) : base(game, content, defaultTex)
+        public GameState(Game1 game, ContentManager content) : base(game, content)
         {
 
         }
 
         public override void LoadContent()
         {
-            _font = _content.Load<SpriteFont>("misc/font");
-
-            _guiManager = new GuiManager(_content, _defaultTex);
-
-            _testCircle = _content.Load<Texture2D>("misc/circle");
-
-            _circleIndicator = _content.Load<Texture2D>("misc/circleIndicator");
+            _guiManager = new GuiManager(_content, Game1.DefaultTexture);
 
             _sprites = new List<Sprite>()
             {
-                new Player(new Dictionary<string, Animation>()
+                new PlayerStateManager(new Dictionary<string, Animation>()
                 {
                     {
                         "Idle", new Animation(_content.Load<Texture2D>("sprites/knight/base"),
@@ -58,7 +50,7 @@ namespace Jump_King_Clone.States
                         "Walk", new Animation(_content.Load<Texture2D>("sprites/knight/base"),
                                             new int[] {1, 2, 3, 2},
                                             new float[] {0.2f, 0.05f, 0.2f, 0.05f},
-                                            32)
+                                            32) { IsLooping = true }
                     },
                     {
                         "Charge", new Animation(_content.Load<Texture2D>("sprites/knight/base"),
@@ -93,7 +85,7 @@ namespace Jump_King_Clone.States
                 })
                 {
                     Position = new Vector2(400, 500),
-                    Input = new Input()
+                    Input = new InputKeys()
                     {
                         Jump = Keys.Space,
                         Left = Keys.Left,
@@ -101,11 +93,11 @@ namespace Jump_King_Clone.States
                     },
                 },
 
-                new Platform(_defaultTex, new Vector2(300, 700), new Point(800, 200)),
-                new Platform(_defaultTex, new Vector2(300, 400), new Point(100, 300))
+                new Platform(Game1.DefaultTexture, new Vector2(300, 700), new Point(800, 200)),
+                new Platform(Game1.DefaultTexture, new Vector2(300, 400), new Point(100, 300))
             };
 
-            _players = _sprites.OfType<Player>().ToList();
+            _players = _sprites.OfType<PlayerStateManager>().ToList();
         }
 
         private void DetectCollisions()
@@ -155,11 +147,18 @@ namespace Jump_King_Clone.States
 
         public override void Update(GameTime gameTime)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-                _game.ChangeState(new MenuState(_game, _content, _defaultTex));
+            FlatKeyboard.Instance.Update();
+            FlatMouse.Instance.Update();
+
+            FlatKeyboard keyboard = FlatKeyboard.Instance;
+
+            if (keyboard.IsKeyDown(Keys.Escape))
+                _game.SwitchState(new MenuState(_game, _content));
 
             foreach (var sprite in _sprites)
                 sprite.Update(gameTime);
+
+            _guiManager.Update(gameTime, _players[0]);
 
             AddChildren();
 
@@ -167,12 +166,10 @@ namespace Jump_King_Clone.States
 
             RemoveSprites();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter) && !_previousKeyboardState.IsKeyDown(Keys.Enter))
+            if (keyboard.IsKeyClicked(Keys.Enter))
             {
                 _showHitboxes = !_showHitboxes;
             }
-
-            _previousKeyboardState = Keyboard.GetState();
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -186,7 +183,7 @@ namespace Jump_King_Clone.States
                 foreach (var sprite1 in _sprites.Where(c => c is ICollidable))
                 {
                     var sprite = (ICollidable)sprite1;
-                    spriteBatch.Draw(_defaultTex, ((Sprite)sprite).Hitbox, Color.Blue);
+                    spriteBatch.Draw(Game1.DefaultTexture, ((Sprite)sprite).Hitbox, Color.Blue);
                 }
             }
 
@@ -202,19 +199,7 @@ namespace Jump_King_Clone.States
 
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null, null);
 
-            spriteBatch.DrawString(_font, "Position: " + _players[0].Position.ToString(), new Vector2(20, 20), Color.White);
-
-            spriteBatch.DrawString(_font, "Velocity: " + _players[0].Velocity.ToString(), new Vector2(20, 40), Color.White);
-
-            spriteBatch.DrawString(_font, "Jump Charge: " + _players[0].jumpCharge.ToString(), new Vector2(20, 60), Color.White);
-
-            spriteBatch.DrawString(_font, "Jump Angle: " + (MathHelper.ToDegrees(_players[0].Angle) + 90).ToString(), new Vector2(55, 80), Color.White);
-
-            spriteBatch.Draw(_testCircle, new Vector2(20, 80), Color.White);
-
-            spriteBatch.Draw(_circleIndicator, new Vector2(36, 96), new Rectangle(0, 0, 32, 32), Color.Red, _players[0].Angle + MathHelper.ToRadians(90f), new Vector2(16, 16), 1, SpriteEffects.None, 1);
-
-            // GUI
+            _guiManager.Draw(gameTime, spriteBatch);
 
             spriteBatch.End();
 

@@ -45,22 +45,33 @@
     <Compile Include="Component.cs" />
     <Compile Include="Controls\Button.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="Input\FlatKeyboard.cs" />
+    <Compile Include="Input\FlatMouse.cs" />
     <Compile Include="Interfaces\ICollidable.cs" />
     <Compile Include="Interfaces\IMovable.cs" />
     <Compile Include="Interfaces\ICollidableAndMovable.cs" />
+    <Compile Include="Letter.cs" />
     <Compile Include="Managers\AnimationManager.cs" />
     <Compile Include="Managers\GUIManager.cs" />
     <Compile Include="Models\Animation.cs" />
     <Compile Include="Models\Circle.cs" />
-    <Compile Include="Models\Input.cs" />
+    <Compile Include="Input\InputKeys.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sprites\Platform.cs" />
-    <Compile Include="Sprites\Player.cs" />
+    <Compile Include="Sprites\Player\PlayerBaseState.cs" />
+    <Compile Include="Sprites\Player\PlayerChargeState.cs" />
+    <Compile Include="Sprites\Player\PlayerFallState.cs" />
+    <Compile Include="Sprites\Player\PlayerIdleState.cs" />
+    <Compile Include="Sprites\Player\PlayerJumpState.cs" />
+    <Compile Include="Sprites\Player\PlayerWalkState.cs" />
+    <Compile Include="Sprites\Player\PlayerStateManager.cs" />
     <Compile Include="Sprites\Sprite.cs" />
     <Compile Include="States\GameState.cs" />
     <Compile Include="States\MenuState.cs" />
     <Compile Include="States\State.cs" />
+    <Compile Include="Text.cs" />
+    <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

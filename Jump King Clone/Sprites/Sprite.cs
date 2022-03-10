@@ -16,9 +16,7 @@ namespace Jump_King_Clone.Sprites
         protected Animation _animation;
         protected AnimationManager _animationManager;
         protected Texture2D Texture;
-        protected Vector2 _contactVelocity;
         protected int _scale = 4;
-        protected bool _isFacingLeft = false;
         protected Vector2 _position;
 
         #endregion
@@ -38,20 +36,12 @@ namespace Jump_King_Clone.Sprites
             }
         }
         public Vector2 Velocity { get; set; }
-        public float Speed { get; set; }
+        public Vector2 ContactVelocity { get; set; }
         public float Angle { get; set; }
         public Color Color { get; set; }
         public bool IsRemoved { get; protected set; }
-        public int Scale
-        {
-            get { return _scale; }
-            set { _scale = value; }
-        }
-        public bool IsFacingLeft
-        {
-            get { return _isFacingLeft; }
-            set { _isFacingLeft = value; }
-        }
+        public int Scale { get; set; }
+        public bool IsFacingLeft { get; set; }
         public Rectangle Rectangle { get; set; }
         public Rectangle Hitbox { get; set; }
         public Sprite Parent;
@@ -64,6 +54,10 @@ namespace Jump_King_Clone.Sprites
         {
             Texture = texture;
 
+            Scale = 4;
+
+            IsFacingLeft = false;
+
             Children = new List<Sprite>();
 
             Color = Color.White;
@@ -72,6 +66,10 @@ namespace Jump_King_Clone.Sprites
         public Sprite(Animation animation)
         {
             Texture = null;
+
+            Scale = 4;
+
+            IsFacingLeft = false;
 
             Children = new List<Sprite>();
 
@@ -83,6 +81,10 @@ namespace Jump_King_Clone.Sprites
         public Sprite(Dictionary<string, Animation> animations)
         {
             Texture = null;
+
+            Scale = 4;
+
+            IsFacingLeft = false;
 
             Children = new List<Sprite>();
 
@@ -126,28 +128,29 @@ namespace Jump_King_Clone.Sprites
 
         public bool Intersects(Sprite sprite)
         {
+            ContactVelocity = Vector2.Zero;
             if (Velocity.X > 0 && IsTouchingLeft(sprite))
             {
-                _contactVelocity.X = Velocity.X;
+                ContactVelocity = new Vector2(Velocity.X, ContactVelocity.Y);
                 Velocity = new Vector2(sprite.Hitbox.Left - Hitbox.Right, Velocity.Y);
                 return true;
             }
 
             if (Velocity.X < 0 & IsTouchingRight(sprite))
             {
-                _contactVelocity.X = Velocity.X;
+                ContactVelocity = new Vector2(Velocity.X, ContactVelocity.Y);
                 Velocity = new Vector2(sprite.Hitbox.Right - Hitbox.Left, Velocity.Y);
                 return true;
             }
             if (Velocity.Y > 0 && IsTouchingTop(sprite))
             {
-                _contactVelocity.Y = Velocity.Y;
+                ContactVelocity = new Vector2(ContactVelocity.X, Velocity.Y);
                 Velocity = new Vector2(Velocity.X, sprite.Hitbox.Top - Hitbox.Bottom);
                 return true;
             }
             if (Velocity.Y < 0 & IsTouchingBottom(sprite))
             {
-                _contactVelocity.Y = Velocity.Y;
+                ContactVelocity = new Vector2(ContactVelocity.X, Velocity.Y);
                 Velocity = new Vector2(Velocity.X, sprite.Hitbox.Bottom - Hitbox.Top);
                 return true;
             }
@@ -155,7 +158,7 @@ namespace Jump_King_Clone.Sprites
             return Hitbox.Intersects(sprite.Hitbox);
         }
 
-        protected bool IsTouchingLeft(Sprite sprite)
+        public bool IsTouchingLeft(Sprite sprite)
         {
             return Hitbox.Right + Velocity.X >= sprite.Hitbox.Left &&
               Hitbox.Left < sprite.Hitbox.Left &&
@@ -163,7 +166,7 @@ namespace Jump_King_Clone.Sprites
               Hitbox.Top < sprite.Hitbox.Bottom;
         }
 
-        protected bool IsTouchingRight(Sprite sprite)
+        public bool IsTouchingRight(Sprite sprite)
         {
             return Hitbox.Left + Velocity.X <= sprite.Hitbox.Right &&
               Hitbox.Right > sprite.Hitbox.Right &&
@@ -171,7 +174,7 @@ namespace Jump_King_Clone.Sprites
               Hitbox.Top < sprite.Hitbox.Bottom;
         }
 
-        protected bool IsTouchingTop(Sprite sprite)
+        public bool IsTouchingTop(Sprite sprite)
         {
             return Hitbox.Bottom + Velocity.Y >= sprite.Hitbox.Top &&
               Hitbox.Top < sprite.Hitbox.Top &&
@@ -179,7 +182,7 @@ namespace Jump_King_Clone.Sprites
               Hitbox.Left < sprite.Hitbox.Right;
         }
 
-        protected bool IsTouchingBottom(Sprite sprite)
+        public bool IsTouchingBottom(Sprite sprite)
         {
             return Hitbox.Top + Velocity.Y <= sprite.Hitbox.Bottom &&
               Hitbox.Bottom > sprite.Hitbox.Bottom &&

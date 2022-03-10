@@ -11,14 +11,15 @@ namespace Jump_King_Clone
         SpriteBatch _spriteBatch;
 
         public static Random Random = new Random();
+        public static Texture2D Bit8Texture;
+        public static Texture2D DefaultTexture;
+        public static Texture2D FontTexture;
 
         public static int ScreenWidth = 1920;
         public static int ScreenHeight = 1080;
 
         private State _currentState;
         private State _nextState;
-
-        private Texture2D _defaultTex;
 
         public Game1()
         {
@@ -39,10 +40,14 @@ namespace Jump_King_Clone
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _defaultTex = new Texture2D(GraphicsDevice, 1, 1);
-            _defaultTex.SetData(new Color[1] { Color.White });
+            DefaultTexture = new Texture2D(GraphicsDevice, 1, 1);
+            DefaultTexture.SetData(new Color[1] { Color.White });
 
-            _currentState = new MenuState(this, Content, _defaultTex);
+            Bit8Texture = new Texture2D(GraphicsDevice, 8, 8);
+
+            FontTexture = Content.Load<Texture2D>("misc/font");
+
+            _currentState = new MenuState(this, Content);
             _currentState.LoadContent();
             _nextState = null;
         }
@@ -64,7 +69,7 @@ namespace Jump_King_Clone
 
             base.Update(gameTime);
         }
-        public void ChangeState(State state)
+        public void SwitchState(State state)
         {
             _nextState = state;
         }

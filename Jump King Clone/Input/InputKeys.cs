@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework.Input;
 
-namespace Jump_King_Clone.Models
+namespace Jump_King_Clone.Input
 {
-    public class Input
+    public class InputKeys
     {
         public Keys Jump { get; set; }
 

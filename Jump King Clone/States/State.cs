@@ -10,15 +10,11 @@ namespace Jump_King_Clone.States
 
         protected ContentManager _content;
 
-        protected Texture2D _defaultTex;
-
-        public State(Game1 game, ContentManager content, Texture2D defaultTex)
+        public State(Game1 game, ContentManager content)
         {
             _game = game;
 
             _content = content;
-
-            _defaultTex = defaultTex;
         }
         public abstract void LoadContent();
         public abstract void Update(GameTime gameTime);

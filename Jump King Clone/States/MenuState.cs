@@ -11,37 +11,28 @@ namespace Jump_King_Clone.States
     {
         private List<Component> _components;
 
-        public MenuState(Game1 game, ContentManager content, Texture2D defaultTex) : base(game, content, defaultTex)
+        public MenuState(Game1 game, ContentManager content) : base(game, content)
         {
         }
 
         public override void LoadContent()
         {
-            var buttonTexture = _content.Load<Texture2D>("misc/button");
-            var buttonFont = _content.Load<SpriteFont>("misc/font");
-
             _components = new List<Component>()
             {
-                new Button(buttonTexture, buttonFont)
+                new Button(new Text("Start Game", 5, new Vector2(700, 400)))
                 {
-                    Text = "Play",
-                    Position = new Vector2(Game1.ScreenWidth / 2, 400),
-                    Click = new EventHandler(Button_Play_Clicked),
-                    Layer = 0.1f
+                    Click = new EventHandler(Button_Play_Clicked)
                 },
-                new Button(buttonTexture, buttonFont)
+                new Button(new Text("Exit Menu", 5, new Vector2(700, 500)))
                 {
-                    Text = "Quit",
-                    Position = new Vector2(Game1.ScreenWidth / 2, 450),
-                    Click = new EventHandler(Button_Quit_Clicked),
-                    Layer = 0.1f
+                    Click = new EventHandler(Button_Quit_Clicked)
                 },
             };
         }
 
         private void Button_Play_Clicked(object sender, EventArgs args)
         {
-            _game.ChangeState(new GameState(_game, _content, _defaultTex));
+            _game.SwitchState(new GameState(_game, _content));
         }
 
         private void Button_Quit_Clicked(object sender, EventArgs args)
@@ -57,7 +48,7 @@ namespace Jump_King_Clone.States
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.Begin(SpriteSortMode.FrontToBack, null, SamplerState.PointClamp, null, null, null, null);
+            spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null, null);
 
             foreach (var component in _components)
                 component.Draw(gameTime, spriteBatch);
